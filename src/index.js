@@ -40,6 +40,7 @@ app.post('/activation', jsonParser, (req, res) => {
   const displayId = 'VQZM6ZHY38T8'
 
   sendActivationMessage(machineId, displayId)
+    .then(() => activations.delete(code))
     .then(() => res.status(HttpStatus.OK))
     .catch(() => res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: 'Error when sending thte activation message' }))
 })
