@@ -5,6 +5,7 @@ const randomstring = require('randomstring')
 const fetch = require('node-fetch')
 const jsonParser = require('body-parser').json()
 const coreApiClient = require('./core-api-client')
+const setCorsHeaders = require('./set-cors-headers')
 
 const defaultPort = 8000
 const port = process.env.PORT || defaultPort
@@ -29,7 +30,14 @@ app.get('/activation', (req, res) => {
   res.json({ code })
 })
 
+app.options('/activation', jsonParser, (req, res) => {
+  setCorsHeaders(req, res)
+  res.send('')
+})
+
 app.post('/activation', jsonParser, (req, res) => {
+  setCorsHeaders(req, res)
+
   if (!req.body || !req.body.code || !req.body.displayName || !req.body.companyId || !req.body.authToken) {
     return res.status(HttpStatus.BAD_REQUEST).send({ error: 'Expected application/json, POST, {code, displayName, companyId, authToken}' })
   }
