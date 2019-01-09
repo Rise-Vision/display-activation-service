@@ -14,7 +14,7 @@ app.use(express.static('public'))
 
 const server = http.createServer(app)
 
-const msServerUrl = 'http://127.0.0.1:9090'
+const msServerUrl = 'https://services-stage.risevision.com'// 'http://127.0.0.1:9090'
 
 const activations = new Map()
 
