@@ -6,8 +6,8 @@ const fetch = require('node-fetch')
 const jsonParser = require('body-parser').json()
 const coreApiClient = require('./core-api-client')
 
-const defaultPort = 80
-const port = process.env.SERVER_PORT || defaultPort
+const defaultPort = 8000
+const port = process.env.PORT || defaultPort
 
 const app = express()
 app.use(express.static('public'))
