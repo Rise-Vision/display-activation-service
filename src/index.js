@@ -10,6 +10,8 @@ const defaultPort = 80
 const port = process.env.SERVER_PORT || defaultPort
 
 const app = express()
+app.use(express.static('public'))
+
 const server = http.createServer(app)
 
 const msServerUrl = 'http://127.0.0.1:9090'
