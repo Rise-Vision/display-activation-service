@@ -1,7 +1,8 @@
 <html lang="en">
   <head>
     <meta name="google-signin-scope" content="profile email">
-    <meta name="google-signin-client_id" content="614513768474.apps.googleusercontent.com">
+    <!-- <meta name="google-signin-client_id" content="614513768474.apps.googleusercontent.com"> -->
+    <meta name="google-signin-client_id" content="944909299968-k9qtkbsmsqmph54smm5dm7sf8kf2iald.apps.googleusercontent.com">
     <script src="https://apis.google.com/js/platform.js" async defer></script>
   </head>
   <body>
@@ -38,7 +39,7 @@
         const companyId = '7d948ac7-decc-4ed3-aa9c-9ba43bda91dc'
         const body = { code, displayName, companyId, authToken }
 
-        fetch('http://localhost:8000/activation', { method: 'POST', body: JSON.stringify(body), headers: { 'Content-Type': 'application/json' } })
+        fetch('https://display-activation-poc.appspot.com/activation', { method: 'POST', body: JSON.stringify(body), headers: { 'Content-Type': 'application/json' } })
           .then(response => console.log(response.text()))
       }
 
