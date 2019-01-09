@@ -4,6 +4,7 @@ const HttpStatus = require('http-status-codes')
 const randomstring = require('randomstring')
 const fetch = require('node-fetch')
 const jsonParser = require('body-parser').json()
+const coreApiClient = require('./core-api-client')
 
 const defaultPort = 80
 const port = process.env.SERVER_PORT || defaultPort
@@ -27,8 +28,8 @@ app.get('/activation', (req, res) => {
 })
 
 app.post('/activation', jsonParser, (req, res) => {
-  if (!req.body || !req.body.code || !req.body.displayName) {
-    return res.status(HttpStatus.BAD_REQUEST).send({ error: 'Expected application/json, POST, {code, displayName}' })
+  if (!req.body || !req.body.code || !req.body.displayName || !req.body.companyId || !req.body.authToken) {
+    return res.status(HttpStatus.BAD_REQUEST).send({ error: 'Expected application/json, POST, {code, displayName, companyId, authToken}' })
   }
 
   const code = req.body.code
@@ -37,12 +38,16 @@ app.post('/activation', jsonParser, (req, res) => {
   }
 
   const machineId = activations.get(code)
-  const displayId = 'VQZM6ZHY38T8'
+  const { displayName, companyId, authToken } = req.body
 
-  sendActivationMessage(machineId, displayId)
+  coreApiClient.createDisplay(displayName, companyId, authToken)
+    .then(displayId => sendActivationMessage(machineId, displayId))
     .then(() => activations.delete(code))
     .then(() => res.status(HttpStatus.OK))
-    .catch(() => res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: 'Error when sending thte activation message' }))
+    .catch(err => {
+      console.log(`Error on display activation ${JSON.stringify(err)}`)
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: 'Error when sending thte activation message' })
+    })
 })
 
 function sendActivationMessage (machineId, displayId) {
