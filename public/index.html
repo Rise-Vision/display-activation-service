@@ -1,56 +1,105 @@
 <html lang="en">
-  <head>
-    <meta name="google-signin-scope" content="profile email">
-    <meta name="google-signin-client_id" content="614513768474.apps.googleusercontent.com">
-    <!-- <meta name="google-signin-client_id" content="944909299968-k9qtkbsmsqmph54smm5dm7sf8kf2iald.apps.googleusercontent.com"> -->
-    <script src="https://apis.google.com/js/platform.js" async defer></script>
-  </head>
-  <body>
-    <div class="g-signin2" data-onsuccess="onSignIn" data-theme="dark"></div>
-    <script>
 
-      let authCode = null
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-      function onSignIn(googleUser) {
-        // Useful data for your client-side scripts:
-        var profile = googleUser.getBasicProfile();
-        console.log("ID: " + profile.getId()); // Don't send this directly to your server!
-        console.log('Full Name: ' + profile.getName());
-        console.log('Given Name: ' + profile.getGivenName());
-        console.log('Family Name: ' + profile.getFamilyName());
-        console.log("Image URL: " + profile.getImageUrl());
-        console.log("Email: " + profile.getEmail());
+  <meta name="google-signin-scope" content="profile email">
+  <meta name="google-signin-client_id" content="614513768474.apps.googleusercontent.com">
+  <!-- <meta name="google-signin-client_id" content="944909299968-k9qtkbsmsqmph54smm5dm7sf8kf2iald.apps.googleusercontent.com"> -->
+  <script src="https://apis.google.com/js/platform.js" async defer></script>
 
-        // The ID token you need to pass to your backend:
-        authToken = googleUser.getAuthResponse().id_token;
-      }
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
+    crossorigin="anonymous">
 
-      function activate(e) {
-        if (!authToken) {
-          alert('Please authenticate')
-          return
-        }
+</head>
 
-        const codeInput = document.getElementById('activationCode')
-        const code = codeInput.value
+<body>
 
-        const displayNameInput = document.getElementById('displayName')
-        const displayName = displayNameInput.value
-        const companyId = '7d948ac7-decc-4ed3-aa9c-9ba43bda91dc'
-        const body = { code, displayName, companyId, authToken }
+  <div class="container">
 
-        fetch('https://display-activation-poc.appspot.com/activation', { method: 'POST', body: JSON.stringify(body), headers: { 'Content-Type': 'application/json' } })
-          .then(response => console.log(response.text()))
-      }
+    <nav class="navbar navbar-light bg-light mb-3">
+      <span class="navbar-brand mb-0"><img src="//s3.amazonaws.com/Rise-Images/UI/logo.svg" class="img-responsive logo-small"
+          width="113" height="42" alt="Rise Vision"></span>
+      <div class="g-signin2" data-onsuccess="onSignIn" data-theme="dark"></div>
+    </nav>
 
-    </script>
+    <div class="alert alert-success fade collapse" role="alert">Display activated with success</div>
+    <div class="alert alert-danger fade collapse" role="alert">An error occurred</div>
 
-    <h1>Display Activation</h1>
     <form>
-      <label for="activationCode">Code</label><input id="activationCode"></input>
-      <label for="displayName">Display Name</label><input id="displayName"></input>
-      <input type="submit" onclick="activate()"></input>
+      <legend>Display Activation</legend>
+      <div class="form-group">
+        <label for="code">Code</label>
+        <input type="text" maxlength="5" style="text-transform: uppercase" class="form-control form-control-lg" id="code"
+          aria-describedby="codeDescription">
+        <small id="codeDescription" class="form-text text-muted">Enter the code showed in your display.</small>
+      </div>
+      <div class="form-group">
+        <label for="displayName">Display Name</label>
+        <input type="text" class="form-control" id="displayName">
+      </div>
+      <button type="button" class="btn btn-primary btn-lg activate-button">Activate</button>
     </form>
 
-  </body>
+  </div>
+
+  <script>
+    const activateButton = document.querySelector('.activate-button')
+    activateButton.addEventListener('click', (evt) => {
+      evt.preventDefault()
+      const code = document.getElementById('code').value.toUpperCase()
+      const displayName = document.getElementById('displayName').value
+      activate(code, displayName)
+    })
+
+    let authCode = null
+
+    function onSignIn(googleUser) {
+      // The ID token you need to pass to your backend:
+      authToken = googleUser.getAuthResponse().id_token;
+    }
+
+    function activate (code, displayName) {
+      if (!authToken) {
+        alert('Please authenticate')
+        return
+      }
+
+      const companyId = '7d948ac7-decc-4ed3-aa9c-9ba43bda91dc'
+      const body = { code, displayName, companyId, authToken }
+
+      fetch('https://display-activation-poc.appspot.com/activation', { method: 'POST', body: JSON.stringify(body), headers: { 'Content-Type': 'application/json' } })
+        .then(response => {
+          if (response.ok) {
+            showSuccess()
+          } else {
+            showError(response.text())
+          }
+        })
+        .catch(err => showError(err))
+    }
+
+    function showError (err) {
+      console.error(err)
+      $('.alert-success').addClass('collapse')
+      $('.alert-danger').addClass('show')
+    }
+
+    function showSuccess () {
+      $('.alert-danger').addClass('collapse')
+      $('.alert-success').addClass('show')
+    }
+
+  </script>
+
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+    crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+    crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+    crossorigin="anonymous"></script>
+</body>
+
 </html>
