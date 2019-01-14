@@ -28,7 +28,7 @@
     <div class="alert alert-success fade collapse" role="alert">Display activated with success</div>
     <div class="alert alert-danger fade collapse" role="alert">An error occurred</div>
 
-    <form>
+    <form autocomplete="off">
       <legend>Display Activation</legend>
       <div class="form-group">
         <label for="code">Code</label>
@@ -40,19 +40,22 @@
         <label for="displayName">Display Name</label>
         <input type="text" class="form-control" id="displayName">
       </div>
-      <button type="button" class="btn btn-primary btn-lg activate-button">Activate</button>
+      <button type="submit" class="btn btn-primary btn-lg activate-button">Activate</button>
     </form>
 
   </div>
 
   <script>
-    const activateButton = document.querySelector('.activate-button')
-    activateButton.addEventListener('click', (evt) => {
+
+    function onSubmit (evt) {
       evt.preventDefault()
       const code = document.getElementById('code').value.toUpperCase()
       const displayName = document.getElementById('displayName').value
       activate(code, displayName)
-    })
+      return false
+    }
+
+    document.querySelector('form').addEventListener('submit', onSubmit)
 
     let authCode = null
 
@@ -88,8 +91,8 @@
     }
 
     function showSuccess () {
-      $('.alert-danger').addClass('collapse')
       $('.alert-success').addClass('show')
+      $('.alert-danger').addClass('collapse')
     }
 
   </script>
